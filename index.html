@@ -1,0 +1,1495 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0b0f14" media="(prefers-color-scheme: dark)">
+  <title>File Fusion - Professional File Merger</title>
+  <style>
+    /* ========== Design System Tokens ========== */
+    :root {
+      color-scheme: light dark;
+      
+      /* Colors */
+      --color-bg: hsl(0 0% 100%);
+      --color-bg-elev-1: hsl(210 20% 98%);
+      --color-bg-elev-2: hsl(210 20% 96%);
+      --color-fg: hsl(222 47% 11%);
+      --color-fg-muted: hsl(216 12% 35%);
+      --color-fg-subtle: hsl(216 12% 46%);
+      --color-border: hsl(210 16% 90%);
+      --color-border-strong: hsl(216 12% 84%);
+      --color-brand: hsl(221 83% 53%);
+      --color-brand-contrast: hsl(0 0% 100%);
+      --color-success: hsl(160 84% 39%);
+      --color-warning: hsl(38 92% 50%);
+      --color-danger: hsl(0 84% 60%);
+      --color-info: hsl(201 100% 45%);
+      
+      /* Surfaces */
+      --surface-alpha-weak: .12;
+      --surface-alpha-strong: .2;
+      
+      /* Spacing */
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-6: 24px;
+      --space-8: 32px;
+      --space-10: 40px;
+      --space-12: 48px;
+      
+      /* Radius */
+      --radius-s: 6px;
+      --radius-m: 8px;
+      --radius-l: 12px;
+      --radius-pill: 9999px;
+      
+      /* Shadows */
+      --shadow-1: 0 1px 2px rgba(0,0,0,.06), 0 1px 1px rgba(0,0,0,.04);
+      --shadow-2: 0 2px 8px rgba(0,0,0,.08);
+      --shadow-3: 0 8px 24px rgba(0,0,0,.12);
+      
+      /* Focus */
+      --focus-ring: 0 0 0 3px color-mix(in oklab, var(--color-brand), transparent 70%);
+      
+      /* Animation */
+      --transition-fast: 120ms;
+      --transition-base: 180ms;
+      --transition-slow: 240ms;
+      --ease-standard: cubic-bezier(.2,.8,.2,1);
+      
+      accent-color: var(--color-brand);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme]) {
+        --color-bg: hsl(220 18% 6%);
+        --color-bg-elev-1: hsl(220 14% 10%);
+        --color-bg-elev-2: hsl(220 14% 14%);
+        --color-fg: hsl(220 20% 96%);
+        --color-fg-muted: hsl(220 12% 70%);
+        --color-fg-subtle: hsl(220 10% 60%);
+        --color-border: hsl(220 14% 20%);
+        --color-border-strong: hsl(220 14% 28%);
+        --color-brand: hsl(221 83% 58%);
+        --surface-alpha-weak: .20;
+      }
+    }
+
+    :root[data-theme="dark"] {
+      --color-bg: hsl(220 18% 6%);
+      --color-bg-elev-1: hsl(220 14% 10%);
+      --color-bg-elev-2: hsl(220 14% 14%);
+      --color-fg: hsl(220 20% 96%);
+      --color-fg-muted: hsl(220 12% 70%);
+      --color-fg-subtle: hsl(220 10% 60%);
+      --color-border: hsl(220 14% 20%);
+      --color-border-strong: hsl(220 14% 28%);
+      --color-brand: hsl(221 83% 58%);
+      --surface-alpha-weak: .20;
+    }
+
+    /* ========== Base Styles ========== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      background: var(--color-bg);
+      color: var(--color-fg);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, PingFang SC, Microsoft YaHei, "Helvetica Neue", Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    code, pre, .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-feature-settings: "tnum" 1;
+    }
+
+    /* ========== Layout ========== */
+    .app {
+      display: grid;
+      grid-template-rows: 56px 1fr;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .topbar {
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--space-6);
+      background: var(--color-bg);
+      border-bottom: 1px solid var(--color-border);
+      position: relative;
+      z-index: 100;
+    }
+
+    .topbar-brand {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .topbar-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--color-fg);
+    }
+
+    .topbar-actions {
+      display: flex;
+      gap: var(--space-2);
+    }
+
+    .main-container {
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      overflow: hidden;
+    }
+
+    .sidebar {
+      background: var(--color-bg-elev-1);
+      border-right: 1px solid var(--color-border);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .content {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ========== Components ========== */
+    
+    /* Section */
+    .section {
+      padding: var(--space-6);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .section:last-child {
+      border-bottom: none;
+    }
+
+    .section-title {
+      font-size: 12px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--color-fg-muted);
+      margin-bottom: var(--space-4);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    /* Button */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      height: 40px;
+      padding: 0 var(--space-4);
+      border-radius: var(--radius-m);
+      border: 1px solid var(--color-border);
+      background: var(--color-bg-elev-1);
+      color: var(--color-fg);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background var(--transition-base), border-color var(--transition-base), transform var(--transition-fast);
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      background: var(--color-bg-elev-2);
+      border-color: var(--color-border-strong);
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .btn--primary {
+      background: var(--color-brand);
+      color: var(--color-brand-contrast);
+      border-color: color-mix(in oklab, var(--color-brand), black 12%);
+    }
+
+    .btn--primary:hover {
+      background: color-mix(in oklab, var(--color-brand), black 8%);
+    }
+
+    .btn--icon {
+      width: 40px;
+      padding: 0;
+    }
+
+    .btn--small {
+      height: 32px;
+      padding: 0 var(--space-3);
+      font-size: 13px;
+    }
+
+    .btn-group {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-2);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn svg {
+      width: 20px;
+      height: 20px;
+      stroke-width: 2;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: var(--space-1);
+      margin-bottom: var(--space-4);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .tab {
+      padding: var(--space-2) var(--space-3);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--color-fg-muted);
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .tab:hover {
+      color: var(--color-fg);
+    }
+
+    .tab.active {
+      color: var(--color-brand);
+      border-bottom-color: var(--color-brand);
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    /* Upload Zone */
+    .upload-zone {
+      border: 2px dashed var(--color-border);
+      border-radius: var(--radius-l);
+      padding: var(--space-8);
+      text-align: center;
+      cursor: pointer;
+      transition: all var(--transition-base);
+      background: var(--color-bg);
+    }
+
+    .upload-zone:hover,
+    .upload-zone.drag-over {
+      border-color: var(--color-brand);
+      background: color-mix(in oklab, var(--color-brand), transparent 95%);
+    }
+
+    .upload-zone-icon {
+      margin: 0 auto var(--space-3);
+      width: 48px;
+      height: 48px;
+      color: var(--color-fg-subtle);
+    }
+
+    .upload-zone-text {
+      font-size: 14px;
+      color: var(--color-fg-muted);
+    }
+
+    /* Filter Grid */
+    .filter-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-2);
+      max-height: 400px;
+      overflow-y: auto;
+      padding-right: var(--space-2);
+    }
+
+    .filter-grid-3col {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .filter-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius-s);
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .filter-item:hover {
+      border-color: var(--color-brand);
+      background: color-mix(in oklab, var(--color-brand), transparent 95%);
+    }
+
+    .filter-item input[type="checkbox"] {
+      margin: 0;
+      width: 16px;
+      height: 16px;
+    }
+
+    .filter-item-label {
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .filter-item-desc {
+      font-size: 11px;
+      color: var(--color-fg-muted);
+    }
+
+    /* Preset Buttons */
+    .preset-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      margin-bottom: var(--space-3);
+    }
+
+    .preset-btn {
+      padding: var(--space-1) var(--space-3);
+      font-size: 12px;
+      height: 28px;
+      border-radius: var(--radius-pill);
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      color: var(--color-fg-muted);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .preset-btn:hover {
+      border-color: var(--color-brand);
+      color: var(--color-brand);
+    }
+
+    /* Custom Input */
+    .custom-input-group {
+      display: flex;
+      gap: var(--space-2);
+      margin-top: var(--space-3);
+    }
+
+    .input {
+      flex: 1;
+      height: 36px;
+      padding: 0 var(--space-3);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-s);
+      background: var(--color-bg);
+      color: var(--color-fg);
+      font-size: 14px;
+      transition: all var(--transition-base);
+    }
+
+    .input:focus {
+      outline: none;
+      border-color: var(--color-brand);
+      box-shadow: var(--focus-ring);
+    }
+
+    .input::placeholder {
+      color: var(--color-fg-subtle);
+    }
+
+    /* Stats - Modified */
+    .stats-inline {
+      display: flex;
+      gap: var(--space-6);
+      align-items: center;
+    }
+
+    .stat-inline {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .stat-inline .stat-label {
+      font-size: 13px;
+      color: var(--color-fg-muted);
+    }
+
+    .stat-inline .stat-value {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--color-brand);
+      font-feature-settings: "tnum" 1;
+    }
+
+    /* Output - Modified */
+    .output-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-4) var(--space-6);
+      background: var(--color-bg-elev-1);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .output-header-left {
+      display: flex;
+      align-items: center;
+      gap: var(--space-8);
+    }
+
+    .output-header-right {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .output-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--color-fg);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .output-content {
+      flex: 1;
+      overflow: hidden;
+      padding: var(--space-6);
+      background: var(--color-bg);
+    }
+
+    .output-textarea {
+      width: 100%;
+      height: 100%;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-m);
+      padding: var(--space-4);
+      background: var(--color-bg-elev-1);
+      color: var(--color-fg);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      resize: none;
+      outline: none;
+      transition: border-color var(--transition-base);
+    }
+
+    .output-textarea:focus {
+      border-color: var(--color-brand);
+      box-shadow: var(--focus-ring);
+    }
+
+    .output-textarea::placeholder {
+      color: var(--color-fg-subtle);
+    }
+
+    /* File List (Debug) */
+    .file-list {
+      margin-top: var(--space-3);
+      padding: var(--space-3);
+      background: var(--color-bg);
+      border-radius: var(--radius-s);
+      max-height: 150px;
+      overflow-y: auto;
+      font-size: 12px;
+      color: var(--color-fg-muted);
+    }
+
+    .file-list-item {
+      padding: var(--space-1);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    /* Action buttons */
+    .action-buttons {
+      display: flex;
+      gap: var(--space-2);
+      margin-top: var(--space-3);
+    }
+
+    /* Utilities */
+    input[type="file"] {
+      display: none;
+    }
+
+    /* Focus States */
+    :where(button, a, input, select, textarea):focus-visible {
+      outline: none;
+      box-shadow: var(--focus-ring);
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--color-border);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--color-border-strong);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .main-container {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+      }
+      
+      .sidebar {
+        border-right: none;
+        border-bottom: 1px solid var(--color-border);
+        max-height: 50vh;
+      }
+
+      .filter-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .output-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-3);
+      }
+
+      .output-header-left {
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-3);
+      }
+
+      .output-header-right {
+        width: 100%;
+      }
+
+      .output-header-right .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Top Bar -->
+    <header class="topbar">
+      <div class="topbar-brand">
+        <svg class="topbar-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+          <polyline points="13 2 13 9 20 9"></polyline>
+        </svg>
+        <div>
+          <div class="topbar-title">File Fusion</div>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn--icon" id="theme-btn" title="切换主题">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="section">
+          <div class="section-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            文件上传
+          </div>
+          
+          <div class="upload-zone" id="upload-zone">
+            <svg class="upload-zone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M7 10l5-5 5 5"/>
+              <path d="M12 5v10"/>
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+            </svg>
+            <div class="upload-zone-text">拖拽文件或文件夹到此处</div>
+          </div>
+
+          <div class="btn-group">
+            <label for="file-input" class="btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+              </svg>
+              选择文件
+            </label>
+            <label for="folder-input" class="btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+              </svg>
+              选择文件夹
+            </label>
+            <input type="file" id="file-input" multiple>
+            <input type="file" id="folder-input" webkitdirectory>
+          </div>
+          
+          <div class="action-buttons">
+            <button class="btn" id="clear-btn" style="width: 100%">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+              清空所有
+            </button>
+          </div>
+          
+          <!-- Debug: File List -->
+          <div id="file-list" class="file-list" style="display: none;"></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <polygon points="22 3 12 13 2 3 2 10 12 20 22 10"></polygon>
+            </svg>
+            文件类型筛选
+          </div>
+
+          <!-- Tabs -->
+          <div class="tabs">
+            <button class="tab active" data-tab="common">常用</button>
+            <button class="tab" data-tab="all">所有</button>
+            <button class="tab" data-tab="custom">自定义</button>
+          </div>
+
+          <!-- Tab Panels -->
+          <div class="tab-panel active" id="common-panel">
+            <!-- Preset buttons -->
+            <div class="preset-group">
+              <button class="preset-btn" data-preset="frontend">前端</button>
+              <button class="preset-btn" data-preset="backend">后端</button>
+              <button class="preset-btn" data-preset="miniprogram">小程序</button>
+              <button class="preset-btn" data-preset="config">配置</button>
+              <button class="preset-btn" data-preset="docs">文档</button>
+              <button class="preset-btn" data-preset="all">全选</button>
+              <button class="preset-btn" data-preset="none">清空</button>
+            </div>
+
+            <div class="filter-grid">
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".js,.jsx" checked>
+                <div>
+                  <div class="filter-item-label">JavaScript</div>
+                  <div class="filter-item-desc">.js .jsx</div>
+                </div>
+              </label>
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".ts,.tsx" checked>
+                <div>
+                  <div class="filter-item-label">TypeScript</div>
+                  <div class="filter-item-desc">.ts .tsx</div>
+                </div>
+              </label>
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".html,.htm" checked>
+                <div>
+                  <div class="filter-item-label">HTML</div>
+                  <div class="filter-item-desc">.html .htm</div>
+                </div>
+              </label>
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".css,.scss,.sass,.less" checked>
+                <div>
+                  <div class="filter-item-label">CSS</div>
+                  <div class="filter-item-desc">.css .scss</div>
+                </div>
+              </label>
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".wxml" checked>
+                <div>
+                  <div class="filter-item-label">WXML</div>
+                  <div class="filter-item-desc">小程序模板</div>
+                </div>
+              </label>
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".wxss" checked>
+                <div>
+                  <div class="filter-item-label">WXSS</div>
+                  <div class="filter-item-desc">小程序样式</div>
+                </div>
+              </label>
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".vue" checked>
+                <div>
+                  <div class="filter-item-label">Vue</div>
+                  <div class="filter-item-desc">.vue</div>
+                </div>
+              </label>
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".json,.jsonc" checked>
+                <div>
+                  <div class="filter-item-label">JSON</div>
+                  <div class="filter-item-desc">.json .jsonc</div>
+                </div>
+              </label>
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".yaml,.yml" checked>
+                <div>
+                  <div class="filter-item-label">YAML</div>
+                  <div class="filter-item-desc">.yaml .yml</div>
+                </div>
+              </label>
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".md,.mdx" checked>
+                <div>
+                  <div class="filter-item-label">Markdown</div>
+                  <div class="filter-item-desc">.md .mdx</div>
+                </div>
+              </label>
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".py,.pyw">
+                <div>
+                  <div class="filter-item-label">Python</div>
+                  <div class="filter-item-desc">.py .pyw</div>
+                </div>
+              </label>
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".go">
+                <div>
+                  <div class="filter-item-label">Go</div>
+                  <div class="filter-item-desc">.go</div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <div class="tab-panel" id="all-panel">
+            <div class="filter-grid filter-grid-3col">
+              <!-- Web Development -->
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".js,.jsx">
+                <div>
+                  <div class="filter-item-label">JS</div>
+                </div>
+              </label>
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".ts,.tsx">
+                <div>
+                  <div class="filter-item-label">TS</div>
+                </div>
+              </label>
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".html,.htm">
+                <div>
+                  <div class="filter-item-label">HTML</div>
+                </div>
+              </label>
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".css">
+                <div>
+                  <div class="filter-item-label">CSS</div>
+                </div>
+              </label>
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".scss,.sass">
+                <div>
+                  <div class="filter-item-label">SCSS</div>
+                </div>
+              </label>
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".less">
+                <div>
+                  <div class="filter-item-label">LESS</div>
+                </div>
+              </label>
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".wxml">
+                <div>
+                  <div class="filter-item-label">WXML</div>
+                </div>
+              </label>
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".wxss">
+                <div>
+                  <div class="filter-item-label">WXSS</div>
+                </div>
+              </label>
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".vue">
+                <div>
+                  <div class="filter-item-label">Vue</div>
+                </div>
+              </label>
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".svelte">
+                <div>
+                  <div class="filter-item-label">Svelte</div>
+                </div>
+              </label>
+              
+              <!-- Backend -->
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".py,.pyw">
+                <div>
+                  <div class="filter-item-label">Python</div>
+                </div>
+              </label>
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".go">
+                <div>
+                  <div class="filter-item-label">Go</div>
+                </div>
+              </label>
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".java">
+                <div>
+                  <div class="filter-item-label">Java</div>
+                </div>
+              </label>
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".kt,.kts">
+                <div>
+                  <div class="filter-item-label">Kotlin</div>
+                </div>
+              </label>
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".cs">
+                <div>
+                  <div class="filter-item-label">C#</div>
+                </div>
+              </label>
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".php">
+                <div>
+                  <div class="filter-item-label">PHP</div>
+                </div>
+              </label>
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".rb">
+                <div>
+                  <div class="filter-item-label">Ruby</div>
+                </div>
+              </label>
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".rs">
+                <div>
+                  <div class="filter-item-label">Rust</div>
+                </div>
+              </label>
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".swift">
+                <div>
+                  <div class="filter-item-label">Swift</div>
+                </div>
+              </label>
+              
+              <!-- System & Low-level -->
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".c">
+                <div>
+                  <div class="filter-item-label">C</div>
+                </div>
+              </label>
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".cpp,.cc,.cxx">
+                <div>
+                  <div class="filter-item-label">C++</div>
+                </div>
+              </label>
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".h,.hpp">
+                <div>
+                  <div class="filter-item-label">Header</div>
+                </div>
+              </label>
+              
+              <!-- Config & Data -->
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".json,.jsonc">
+                <div>
+                  <div class="filter-item-label">JSON</div>
+                </div>
+              </label>
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".xml">
+                <div>
+                  <div class="filter-item-label">XML</div>
+                </div>
+              </label>
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".yaml,.yml">
+                <div>
+                  <div class="filter-item-label">YAML</div>
+                </div>
+              </label>
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".toml">
+                <div>
+                  <div class="filter-item-label">TOML</div>
+                </div>
+              </label>
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".ini,.cfg">
+                <div>
+                  <div class="filter-item-label">INI</div>
+                </div>
+              </label>
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".env">
+                <div>
+                  <div class="filter-item-label">ENV</div>
+                </div>
+              </label>
+              
+              <!-- Documentation -->
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".md,.mdx">
+                <div>
+                  <div class="filter-item-label">MD</div>
+                </div>
+              </label>
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".txt">
+                <div>
+                  <div class="filter-item-label">TXT</div>
+                </div>
+              </label>
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".rst">
+                <div>
+                  <div class="filter-item-label">RST</div>
+                </div>
+              </label>
+              
+              <!-- Shell & Scripts -->
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".sh,.bash">
+                <div>
+                  <div class="filter-item-label">Shell</div>
+                </div>
+              </label>
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".ps1">
+                <div>
+                  <div class="filter-item-label">PS</div>
+                </div>
+              </label>
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".bat,.cmd">
+                <div>
+                  <div class="filter-item-label">Batch</div>
+                </div>
+              </label>
+              
+              <!-- Database -->
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".sql">
+                <div>
+                  <div class="filter-item-label">SQL</div>
+                </div>
+              </label>
+              
+              <!-- Mobile -->
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".dart">
+                <div>
+                  <div class="filter-item-label">Dart</div>
+                </div>
+              </label>
+              <label class="filter-item">
+                <input type="checkbox" class="filter-checkbox" value=".m,.mm">
+                <div>
+                  <div class="filter-item-label">ObjC</div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <div class="tab-panel" id="custom-panel">
+            <div class="custom-input-group">
+              <input 
+                type="text" 
+                class="input" 
+                id="custom-ext-input" 
+                placeholder="输入扩展名，如: .txt .log .conf"
+              >
+              <button class="btn btn--small" id="add-custom-btn">添加</button>
+            </div>
+            <div id="custom-extensions" style="margin-top: 12px;">
+              <!-- Custom extensions will be added here -->
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="content">
+        <div class="output-header">
+          <div class="output-header-left">
+            <div class="output-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+              合并结果
+            </div>
+            <div class="stats-inline">
+              <div class="stat-inline">
+                <span class="stat-label">文件数量:</span>
+                <span class="stat-value" id="file-count">0</span>
+              </div>
+              <div class="stat-inline">
+                <span class="stat-label">字符总数:</span>
+                <span class="stat-value" id="char-count">0</span>
+              </div>
+            </div>
+          </div>
+          <div class="output-header-right">
+            <button class="btn btn--primary" id="copy-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              复制内容
+            </button>
+          </div>
+        </div>
+        <div class="output-content">
+          <textarea 
+            id="output" 
+            class="output-textarea" 
+            placeholder="选择文件后，合并结果将在此显示..."
+            readonly
+          ></textarea>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    class FileFusion {
+      constructor() {
+        this.files = [];
+        this.customExtensions = new Set();
+        this.fileTypePresets = {
+          frontend: ['.js', '.jsx', '.ts', '.tsx', '.html', '.htm', '.css', '.scss', '.sass', '.less', '.vue', '.svelte'],
+          backend: ['.py', '.pyw', '.go', '.java', '.cs', '.php', '.rb', '.rs', '.kt', '.kts'],
+          miniprogram: ['.js', '.json', '.wxml', '.wxss'],
+          config: ['.json', '.jsonc', '.xml', '.yaml', '.yml', '.toml', '.ini', '.cfg', '.env'],
+          docs: ['.md', '.mdx', '.txt', '.rst'],
+          all: 'all',
+          none: 'none'
+        };
+        
+        this.initElements();
+        this.bindEvents();
+        this.initTheme();
+      }
+
+      initElements() {
+        this.uploadZone = document.getElementById('upload-zone');
+        this.fileInput = document.getElementById('file-input');
+        this.folderInput = document.getElementById('folder-input');
+        this.output = document.getElementById('output');
+        this.fileCount = document.getElementById('file-count');
+        this.charCount = document.getElementById('char-count');
+        this.copyBtn = document.getElementById('copy-btn');
+        this.clearBtn = document.getElementById('clear-btn');
+        this.themeBtn = document.getElementById('theme-btn');
+        this.filterCheckboxes = document.querySelectorAll('.filter-checkbox');
+        this.tabs = document.querySelectorAll('.tab');
+        this.tabPanels = document.querySelectorAll('.tab-panel');
+        this.presetBtns = document.querySelectorAll('.preset-btn');
+        this.customExtInput = document.getElementById('custom-ext-input');
+        this.addCustomBtn = document.getElementById('add-custom-btn');
+        this.customExtContainer = document.getElementById('custom-extensions');
+        this.fileListEl = document.getElementById('file-list');
+      }
+
+      bindEvents() {
+        // Upload events
+        this.uploadZone.addEventListener('dragover', this.handleDragOver.bind(this));
+        this.uploadZone.addEventListener('dragleave', this.handleDragLeave.bind(this));
+        this.uploadZone.addEventListener('drop', this.handleDrop.bind(this));
+        this.uploadZone.addEventListener('click', () => this.fileInput.click());
+
+        // File selection - 修复多文件上传
+        this.fileInput.addEventListener('change', (e) => {
+          const files = Array.from(e.target.files);
+          console.log('Selected files:', files.length);
+          this.handleFileSelect(files);
+        });
+        
+        this.folderInput.addEventListener('change', (e) => {
+          const files = Array.from(e.target.files);
+          console.log('Selected folder files:', files.length);
+          this.handleFileSelect(files);
+        });
+
+        // Filters
+        this.filterCheckboxes.forEach(cb => {
+          cb.addEventListener('change', () => this.processFiles());
+        });
+
+        // Tabs
+        this.tabs.forEach(tab => {
+          tab.addEventListener('click', () => this.switchTab(tab));
+        });
+
+        // Preset buttons
+        this.presetBtns.forEach(btn => {
+          btn.addEventListener('click', () => this.applyPreset(btn.dataset.preset));
+        });
+
+        // Custom extensions
+        this.addCustomBtn.addEventListener('click', () => this.addCustomExtensions());
+        this.customExtInput.addEventListener('keydown', e => {
+          if (e.key === 'Enter') this.addCustomExtensions();
+        });
+
+        // Actions
+        this.copyBtn.addEventListener('click', this.copyToClipboard.bind(this));
+        this.clearBtn.addEventListener('click', this.clearAll.bind(this));
+        this.themeBtn.addEventListener('click', this.toggleTheme.bind(this));
+      }
+
+      switchTab(activeTab) {
+        this.tabs.forEach(tab => tab.classList.remove('active'));
+        this.tabPanels.forEach(panel => panel.classList.remove('active'));
+        
+        activeTab.classList.add('active');
+        const panelId = activeTab.dataset.tab + '-panel';
+        document.getElementById(panelId).classList.add('active');
+      }
+
+      applyPreset(preset) {
+        const checkboxes = document.querySelectorAll('#common-panel .filter-checkbox, #all-panel .filter-checkbox');
+        
+        if (preset === 'all') {
+          checkboxes.forEach(cb => cb.checked = true);
+        } else if (preset === 'none') {
+          checkboxes.forEach(cb => cb.checked = false);
+        } else if (this.fileTypePresets[preset]) {
+          checkboxes.forEach(cb => cb.checked = false);
+          const extensions = this.fileTypePresets[preset];
+          checkboxes.forEach(cb => {
+            const values = cb.value.split(',');
+            if (values.some(v => extensions.includes(v))) {
+              cb.checked = true;
+            }
+          });
+        }
+        
+        this.processFiles();
+      }
+
+      addCustomExtensions() {
+        const input = this.customExtInput.value.trim();
+        if (!input) return;
+        
+        const extensions = input.split(/[\s,]+/).filter(ext => {
+          return ext && (ext.startsWith('.') || ext.match(/^[a-zA-Z0-9]+$/));
+        }).map(ext => ext.startsWith('.') ? ext : '.' + ext);
+        
+        extensions.forEach(ext => {
+          if (!this.customExtensions.has(ext)) {
+            this.customExtensions.add(ext);
+            this.addCustomExtensionUI(ext);
+          }
+        });
+        
+        this.customExtInput.value = '';
+        this.processFiles();
+      }
+
+      addCustomExtensionUI(ext) {
+        const item = document.createElement('label');
+        item.className = 'filter-item';
+        item.innerHTML = `
+          <input type="checkbox" class="custom-filter-checkbox" value="${ext}" checked>
+          <div>
+            <div class="filter-item-label">${ext}</div>
+          </div>
+        `;
+        
+        const checkbox = item.querySelector('input');
+        checkbox.addEventListener('change', () => this.processFiles());
+        
+        this.customExtContainer.appendChild(item);
+      }
+
+      handleDragOver(e) {
+        e.preventDefault();
+        this.uploadZone.classList.add('drag-over');
+      }
+
+      handleDragLeave(e) {
+        e.preventDefault();
+        this.uploadZone.classList.remove('drag-over');
+      }
+
+      async handleDrop(e) {
+        e.preventDefault();
+        this.uploadZone.classList.remove('drag-over');
+        
+        const items = Array.from(e.dataTransfer.items);
+        const files = [];
+        
+        for (const item of items) {
+          const entry = item.webkitGetAsEntry();
+          if (entry) {
+            const entryFiles = await this.traverseFileTree(entry);
+            files.push(...entryFiles);
+          }
+        }
+        
+        console.log('Dropped files:', files.length);
+        this.addFiles(files);
+      }
+
+      async traverseFileTree(entry) {
+        const files = [];
+        
+        if (entry.isFile) {
+          const file = await new Promise(resolve => entry.file(resolve));
+          files.push(file);
+        } else if (entry.isDirectory) {
+          const reader = entry.createReader();
+          let entries = [];
+          let batch;
+          
+          // 读取所有条目（可能需要多次调用）
+          do {
+            batch = await new Promise(resolve => reader.readEntries(resolve));
+            entries.push(...batch);
+          } while (batch.length > 0);
+          
+          for (const childEntry of entries) {
+            const childFiles = await this.traverseFileTree(childEntry);
+            files.push(...childFiles);
+          }
+        }
+        
+        return files;
+      }
+
+      handleFileSelect(fileList) {
+        // 确保处理所有文件
+        console.log('Processing files:', fileList.length);
+        this.addFiles(fileList);
+      }
+
+      addFiles(newFiles) {
+        // 添加新文件到列表
+        this.files = [...this.files, ...newFiles];
+        
+        // 去重（基于文件名和大小）
+        const uniqueFiles = new Map();
+        this.files.forEach(file => {
+          const key = `${file.name}-${file.size}`;
+          if (!uniqueFiles.has(key)) {
+            uniqueFiles.set(key, file);
+          }
+        });
+        this.files = Array.from(uniqueFiles.values());
+        
+        console.log('Total files after adding:', this.files.length);
+        
+        // 显示文件列表（调试）
+        this.showFileList();
+        
+        this.processFiles();
+      }
+
+      showFileList() {
+        // 可选：显示文件列表用于调试
+        const fileNames = this.files.map(f => f.name).join(', ');
+        console.log('Current files:', fileNames);
+      }
+
+      async processFiles() {
+        const selectedExtensions = [];
+        
+        // Get regular checkboxes
+        document.querySelectorAll('.filter-checkbox:checked').forEach(cb => {
+          cb.value.split(',').forEach(ext => selectedExtensions.push(ext.trim()));
+        });
+        
+        // Get custom checkboxes
+        document.querySelectorAll('.custom-filter-checkbox:checked').forEach(cb => {
+          selectedExtensions.push(cb.value.trim());
+        });
+
+        console.log('Selected extensions:', selectedExtensions);
+        console.log('Total files to filter:', this.files.length);
+
+        const filteredFiles = this.files.filter(file => {
+          const fileName = file.name.toLowerCase();
+          return selectedExtensions.some(ext => {
+            const extLower = ext.toLowerCase();
+            // Handle special cases like Makefile, Dockerfile
+            if (!extLower.startsWith('.')) {
+              return fileName === extLower;
+            }
+            return fileName.endsWith(extLower);
+          });
+        });
+
+        console.log('Filtered files:', filteredFiles.length);
+        this.updateStats(filteredFiles.length, 0);
+
+        if (filteredFiles.length === 0) {
+          this.output.value = this.files.length > 0 
+            ? `没有符合筛选条件的文件\n（共上传 ${this.files.length} 个文件）` 
+            : '请选择或拖拽文件到上传区域';
+          return;
+        }
+
+        this.output.value = '正在读取文件...';
+
+        try {
+          const contents = await Promise.all(
+            filteredFiles.map(file => this.readFile(file))
+          );
+
+          const merged = contents.join('\n\n');
+          this.output.value = merged;
+          this.updateStats(filteredFiles.length, merged.length);
+        } catch (error) {
+          console.error('Error reading files:', error);
+          this.output.value = '读取文件时出错：' + error.message;
+        }
+      }
+
+      readFile(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            const header = `// ${'='.repeat(10)} ${file.name} ${'='.repeat(10)}\n`;
+            resolve(header + reader.result);
+          };
+          reader.onerror = () => reject(new Error(`无法读取文件：${file.name}`));
+          reader.readAsText(file);
+        });
+      }
+
+      updateStats(fileCount, charCount) {
+        this.fileCount.textContent = fileCount.toLocaleString();
+        this.charCount.textContent = charCount.toLocaleString();
+      }
+
+      async copyToClipboard() {
+        if (!this.output.value || this.output.value.includes('请选择或拖拽文件')) {
+          return;
+        }
+
+        try {
+          await navigator.clipboard.writeText(this.output.value);
+          const originalText = this.copyBtn.innerHTML;
+          this.copyBtn.innerHTML = `
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            已复制
+          `;
+          setTimeout(() => {
+            this.copyBtn.innerHTML = originalText;
+          }, 2000);
+        } catch (err) {
+          console.error('Copy failed:', err);
+          alert('复制失败，请手动选择复制');
+        }
+      }
+
+      clearAll() {
+        this.files = [];
+        this.fileInput.value = '';
+        this.folderInput.value = '';
+        this.output.value = '';
+        this.updateStats(0, 0);
+        console.log('All files cleared');
+      }
+
+      initTheme() {
+        const saved = localStorage.getItem('theme');
+        if (saved) {
+          document.documentElement.setAttribute('data-theme', saved);
+        }
+      }
+
+      toggleTheme() {
+        const root = document.documentElement;
+        const current = root.getAttribute('data-theme');
+        
+        if (!current) {
+          const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          const newTheme = isDark ? 'light' : 'dark';
+          root.setAttribute('data-theme', newTheme);
+          localStorage.setItem('theme', newTheme);
+        } else if (current === 'light') {
+          root.setAttribute('data-theme', 'dark');
+          localStorage.setItem('theme', 'dark');
+        } else {
+          root.removeAttribute('data-theme');
+          localStorage.removeItem('theme');
+        }
+      }
+    }
+
+    // Initialize app
+    new FileFusion();
+  </script>
+</body>
+</html>
