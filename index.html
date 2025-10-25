@@ -485,6 +485,138 @@
       gap: var(--space-2);
     }
 
+    /* ========== File Tabs (NEW) ========== */
+    .file-tabs-container {
+      background: var(--color-bg-elev-1);
+      border-bottom: 1px solid var(--color-border);
+      padding: 0 var(--space-6);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      min-height: 44px;
+      overflow: hidden;
+    }
+
+    .file-tabs-wrapper {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .file-tabs-list {
+      display: flex;
+      gap: var(--space-1);
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-behavior: smooth;
+      padding: var(--space-2) 0;
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE/Edge */
+    }
+
+    .file-tabs-list::-webkit-scrollbar {
+      display: none; /* Chrome/Safari */
+    }
+
+    .file-tab {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-1) var(--space-3);
+      border-radius: var(--radius-s);
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      font-size: 13px;
+      color: var(--color-fg);
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      max-width: 200px;
+      position: relative;
+    }
+
+    .file-tab:hover {
+      background: var(--color-bg-elev-2);
+      border-color: var(--color-brand);
+    }
+
+    .file-tab-icon {
+      flex-shrink: 0;
+      width: 16px;
+      height: 16px;
+      opacity: 0.7;
+    }
+
+    .file-tab-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .file-tab-close {
+      flex-shrink: 0;
+      width: 16px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 3px;
+      transition: all var(--transition-fast);
+      opacity: 0.5;
+      cursor: pointer;
+    }
+
+    .file-tab-close:hover {
+      opacity: 1;
+      background: var(--color-danger);
+      color: white;
+    }
+
+    .file-tab-close svg {
+      width: 12px;
+      height: 12px;
+      stroke-width: 2.5;
+    }
+
+    .file-tabs-scroll-btn {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-s);
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .file-tabs-scroll-btn:hover {
+      background: var(--color-bg-elev-2);
+      border-color: var(--color-brand);
+    }
+
+    .file-tabs-scroll-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .file-tabs-scroll-btn.visible {
+      display: flex;
+    }
+
+    .file-tabs-empty {
+      color: var(--color-fg-muted);
+      font-size: 13px;
+      padding: var(--space-2) 0;
+      font-style: italic;
+    }
+
+    /* Output Content */
     .output-content {
       flex: 1;
       overflow: hidden;
@@ -608,6 +740,10 @@
       .output-header-right .btn {
         width: 100%;
       }
+
+      .file-tab {
+        max-width: 150px;
+      }
     }
   </style>
 </head>
@@ -691,9 +827,6 @@
               清空所有
             </button>
           </div>
-          
-          <!-- Debug: File List -->
-          <div id="file-list" class="file-list" style="display: none;"></div>
         </div>
 
         <div class="section">
@@ -1106,6 +1239,26 @@
             </button>
           </div>
         </div>
+
+        <!-- File Tabs (NEW) -->
+        <div class="file-tabs-container" id="file-tabs-container">
+          <button class="file-tabs-scroll-btn" id="scroll-left-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          </button>
+          <div class="file-tabs-wrapper">
+            <div class="file-tabs-list" id="file-tabs-list">
+              <div class="file-tabs-empty">暂无文件</div>
+            </div>
+          </div>
+          <button class="file-tabs-scroll-btn" id="scroll-right-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+        </div>
+
         <div class="output-content">
           <textarea 
             id="output" 
@@ -1155,7 +1308,11 @@
         this.customExtInput = document.getElementById('custom-ext-input');
         this.addCustomBtn = document.getElementById('add-custom-btn');
         this.customExtContainer = document.getElementById('custom-extensions');
-        this.fileListEl = document.getElementById('file-list');
+        
+        // File tabs elements
+        this.fileTabsList = document.getElementById('file-tabs-list');
+        this.scrollLeftBtn = document.getElementById('scroll-left-btn');
+        this.scrollRightBtn = document.getElementById('scroll-right-btn');
       }
 
       bindEvents() {
@@ -1165,16 +1322,14 @@
         this.uploadZone.addEventListener('drop', this.handleDrop.bind(this));
         this.uploadZone.addEventListener('click', () => this.fileInput.click());
 
-        // File selection - 修复多文件上传
+        // File selection
         this.fileInput.addEventListener('change', (e) => {
           const files = Array.from(e.target.files);
-          console.log('Selected files:', files.length);
           this.handleFileSelect(files);
         });
         
         this.folderInput.addEventListener('change', (e) => {
           const files = Array.from(e.target.files);
-          console.log('Selected folder files:', files.length);
           this.handleFileSelect(files);
         });
 
@@ -1203,6 +1358,11 @@
         this.copyBtn.addEventListener('click', this.copyToClipboard.bind(this));
         this.clearBtn.addEventListener('click', this.clearAll.bind(this));
         this.themeBtn.addEventListener('click', this.toggleTheme.bind(this));
+
+        // File tabs scroll
+        this.scrollLeftBtn.addEventListener('click', () => this.scrollTabs('left'));
+        this.scrollRightBtn.addEventListener('click', () => this.scrollTabs('right'));
+        this.fileTabsList.addEventListener('scroll', () => this.updateScrollButtons());
       }
 
       switchTab(activeTab) {
@@ -1295,7 +1455,6 @@
           }
         }
         
-        console.log('Dropped files:', files.length);
         this.addFiles(files);
       }
 
@@ -1310,7 +1469,6 @@
           let entries = [];
           let batch;
           
-          // 读取所有条目（可能需要多次调用）
           do {
             batch = await new Promise(resolve => reader.readEntries(resolve));
             entries.push(...batch);
@@ -1326,16 +1484,13 @@
       }
 
       handleFileSelect(fileList) {
-        // 确保处理所有文件
-        console.log('Processing files:', fileList.length);
         this.addFiles(fileList);
       }
 
       addFiles(newFiles) {
-        // 添加新文件到列表
         this.files = [...this.files, ...newFiles];
         
-        // 去重（基于文件名和大小）
+        // 去重
         const uniqueFiles = new Map();
         this.files.forEach(file => {
           const key = `${file.name}-${file.size}`;
@@ -1345,41 +1500,136 @@
         });
         this.files = Array.from(uniqueFiles.values());
         
-        console.log('Total files after adding:', this.files.length);
-        
-        // 显示文件列表（调试）
-        this.showFileList();
-        
+        this.renderFileTabs();
         this.processFiles();
       }
 
-      showFileList() {
-        // 可选：显示文件列表用于调试
-        const fileNames = this.files.map(f => f.name).join(', ');
-        console.log('Current files:', fileNames);
+      // ========== NEW: File Tabs Methods ==========
+      renderFileTabs() {
+        if (this.files.length === 0) {
+          this.fileTabsList.innerHTML = '<div class="file-tabs-empty">暂无文件</div>';
+          this.updateScrollButtons();
+          return;
+        }
+
+        this.fileTabsList.innerHTML = this.files.map((file, index) => {
+          const icon = this.getFileIcon(file.name);
+          const fileName = file.name;
+          const fileSize = this.formatFileSize(file.size);
+          
+          return `
+            <div class="file-tab" data-index="${index}" title="${fileName} (${fileSize})">
+              <span class="file-tab-icon">${icon}</span>
+              <span class="file-tab-name">${fileName}</span>
+              <span class="file-tab-close" data-index="${index}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </span>
+            </div>
+          `;
+        }).join('');
+
+        // Bind close events
+        this.fileTabsList.querySelectorAll('.file-tab-close').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const index = parseInt(btn.dataset.index);
+            this.removeFileByTab(index);
+          });
+        });
+
+        this.updateScrollButtons();
       }
+
+      getFileIcon(fileName) {
+        const ext = fileName.toLowerCase().split('.').pop();
+        const icons = {
+          'js': '⚡',
+          'jsx': '⚡',
+          'ts': '💠',
+          'tsx': '💠',
+          'html': '📄',
+          'htm': '📄',
+          'css': '🎨',
+          'scss': '🎨',
+          'sass': '🎨',
+          'less': '🎨',
+          'json': '📋',
+          'md': '📝',
+          'py': '🐍',
+          'go': '🔷',
+          'vue': '💚',
+          'java': '☕',
+          'php': '🐘',
+          'rb': '💎',
+          'rs': '🦀',
+          'xml': '📰',
+          'yaml': '⚙️',
+          'yml': '⚙️',
+          'txt': '📃',
+          'sql': '🗄️',
+        };
+        return icons[ext] || '📄';
+      }
+
+      formatFileSize(bytes) {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+        return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+      }
+
+      removeFileByTab(index) {
+        this.files.splice(index, 1);
+        this.renderFileTabs();
+        this.processFiles();
+      }
+
+      scrollTabs(direction) {
+        const scrollAmount = 200;
+        const currentScroll = this.fileTabsList.scrollLeft;
+        const targetScroll = direction === 'left' 
+          ? currentScroll - scrollAmount 
+          : currentScroll + scrollAmount;
+        
+        this.fileTabsList.scrollTo({
+          left: targetScroll,
+          behavior: 'smooth'
+        });
+      }
+
+      updateScrollButtons() {
+        const list = this.fileTabsList;
+        const canScrollLeft = list.scrollLeft > 0;
+        const canScrollRight = list.scrollLeft < list.scrollWidth - list.clientWidth - 1;
+        
+        if (canScrollLeft || canScrollRight) {
+          this.scrollLeftBtn.classList.toggle('visible', canScrollLeft);
+          this.scrollRightBtn.classList.toggle('visible', canScrollRight);
+        } else {
+          this.scrollLeftBtn.classList.remove('visible');
+          this.scrollRightBtn.classList.remove('visible');
+        }
+      }
+
+      // ========== END: File Tabs Methods ==========
 
       async processFiles() {
         const selectedExtensions = [];
         
-        // Get regular checkboxes
         document.querySelectorAll('.filter-checkbox:checked').forEach(cb => {
           cb.value.split(',').forEach(ext => selectedExtensions.push(ext.trim()));
         });
         
-        // Get custom checkboxes
         document.querySelectorAll('.custom-filter-checkbox:checked').forEach(cb => {
           selectedExtensions.push(cb.value.trim());
         });
-
-        console.log('Selected extensions:', selectedExtensions);
-        console.log('Total files to filter:', this.files.length);
 
         const filteredFiles = this.files.filter(file => {
           const fileName = file.name.toLowerCase();
           return selectedExtensions.some(ext => {
             const extLower = ext.toLowerCase();
-            // Handle special cases like Makefile, Dockerfile
             if (!extLower.startsWith('.')) {
               return fileName === extLower;
             }
@@ -1387,7 +1637,6 @@
           });
         });
 
-        console.log('Filtered files:', filteredFiles.length);
         this.updateStats(filteredFiles.length, 0);
 
         if (filteredFiles.length === 0) {
@@ -1459,7 +1708,7 @@
         this.folderInput.value = '';
         this.output.value = '';
         this.updateStats(0, 0);
-        console.log('All files cleared');
+        this.renderFileTabs();
       }
 
       initTheme() {
