@@ -171,6 +171,149 @@
       overflow: hidden;
     }
 
+    /* ========== File Tabs (New) ========== */
+    .file-tabs-container {
+      background: var(--color-bg-elev-1);
+      border-bottom: 1px solid var(--color-border);
+      height: 40px;
+      display: flex;
+      align-items: flex-end;
+      padding: 0 var(--space-3);
+      overflow-x: auto;
+      overflow-y: hidden;
+      position: relative;
+    }
+
+    .file-tabs-container::-webkit-scrollbar {
+      height: 3px;
+    }
+
+    .file-tabs-wrapper {
+      display: flex;
+      gap: 2px;
+      align-items: flex-end;
+      padding-bottom: 0;
+    }
+
+    .file-tab {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-2) var(--space-3);
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-bottom: none;
+      border-radius: var(--radius-s) var(--radius-s) 0 0;
+      font-size: 13px;
+      color: var(--color-fg);
+      cursor: default;
+      position: relative;
+      max-width: 200px;
+      min-width: 120px;
+      height: 32px;
+      transition: all var(--transition-fast);
+      user-select: none;
+    }
+
+    .file-tab:hover {
+      background: var(--color-bg-elev-2);
+    }
+
+    .file-tab.active {
+      background: var(--color-bg);
+      border-color: var(--color-brand);
+      color: var(--color-brand);
+      z-index: 1;
+    }
+
+    .file-tab-icon {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+      opacity: 0.8;
+    }
+
+    .file-tab-name {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-weight: 500;
+    }
+
+    .file-tab-close {
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-s);
+      color: var(--color-fg-muted);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      flex-shrink: 0;
+      margin-right: -4px;
+    }
+
+    .file-tab-close:hover {
+      background: var(--color-danger);
+      color: white;
+    }
+
+    .file-tab-close svg {
+      width: 12px;
+      height: 12px;
+      stroke-width: 2.5;
+    }
+
+    .file-tabs-empty {
+      padding: var(--space-2) var(--space-4);
+      color: var(--color-fg-muted);
+      font-size: 13px;
+      font-style: italic;
+    }
+
+    /* File type colors */
+    .file-tab[data-type="js"],
+    .file-tab[data-type="jsx"] {
+      --file-color: hsl(50 100% 50%);
+    }
+
+    .file-tab[data-type="ts"],
+    .file-tab[data-type="tsx"] {
+      --file-color: hsl(211 100% 50%);
+    }
+
+    .file-tab[data-type="html"],
+    .file-tab[data-type="htm"] {
+      --file-color: hsl(15 100% 55%);
+    }
+
+    .file-tab[data-type="css"],
+    .file-tab[data-type="scss"],
+    .file-tab[data-type="sass"],
+    .file-tab[data-type="less"] {
+      --file-color: hsl(228 100% 60%);
+    }
+
+    .file-tab[data-type="json"],
+    .file-tab[data-type="jsonc"] {
+      --file-color: hsl(90 60% 50%);
+    }
+
+    .file-tab[data-type="vue"] {
+      --file-color: hsl(153 47% 49%);
+    }
+
+    .file-tab[data-type="md"],
+    .file-tab[data-type="mdx"] {
+      --file-color: hsl(200 18% 46%);
+    }
+
+    .file-tab-icon {
+      color: var(--file-color, var(--color-fg-muted));
+    }
+
     /* ========== Components ========== */
     
     /* Section */
@@ -245,32 +388,32 @@
       font-size: 13px;
     }
 
-    .btn-group {
+    。btn-group {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(2， 1fr);
       gap: var(--space-2);
     }
 
-    .btn:disabled {
+    。btn:disabled {
       opacity: 0.5;
       cursor: not-allowed;
     }
 
-    .btn svg {
+    。btn svg {
       width: 20px;
       height: 20px;
       stroke-width: 2;
     }
 
     /* Tabs */
-    .tabs {
+    。tabs {
       display: flex;
       gap: var(--space-1);
       margin-bottom: var(--space-4);
       border-bottom: 1px solid var(--color-border);
     }
 
-    .tab {
+    。tab {
       padding: var(--space-2) var(--space-3);
       font-size: 13px;
       font-weight: 500;
@@ -279,44 +422,44 @@
       border: none;
       border-bottom: 2px solid transparent;
       cursor: pointer;
-      transition: all var(--transition-fast);
+      transition: 全部 var(--transition-fast);
     }
 
-    .tab:hover {
+    。tab:hover {
       color: var(--color-fg);
     }
 
-    .tab.active {
+    。tab.active {
       color: var(--color-brand);
       border-bottom-color: var(--color-brand);
     }
 
-    .tab-panel {
+    。tab-panel {
       display: none;
     }
 
-    .tab-panel.active {
+    。tab-panel.active {
       display: block;
     }
 
     /* Upload Zone */
-    .upload-zone {
+    。upload-zone {
       border: 2px dashed var(--color-border);
       border-radius: var(--radius-l);
       padding: var(--space-8);
       text-align: center;
       cursor: pointer;
-      transition: all var(--transition-base);
+      transition: 全部 var(--transition-base);
       background: var(--color-bg);
     }
 
-    .upload-zone:hover,
-    .upload-zone.drag-over {
+    。upload-zone:hover,
+    。upload-zone.drag-over {
       border-color: var(--color-brand);
-      background: color-mix(in oklab, var(--color-brand), transparent 95%);
+      background: color-mix(in oklab， var(--color-brand)， transparent 95%);
     }
 
-    .upload-zone-icon {
+    。upload-zone-icon {
       margin: 0 auto var(--space-3);
       width: 48px;
       height: 48px;
@@ -517,28 +660,35 @@
       color: var(--color-fg-subtle);
     }
 
-    /* File List (Debug) */
-    .file-list {
-      margin-top: var(--space-3);
-      padding: var(--space-3);
-      background: var(--color-bg);
-      border-radius: var(--radius-s);
-      max-height: 150px;
-      overflow-y: auto;
-      font-size: 12px;
-      color: var(--color-fg-muted);
-    }
-
-    .file-list-item {
-      padding: var(--space-1);
-      border-bottom: 1px solid var(--color-border);
-    }
-
     /* Action buttons */
     .action-buttons {
       display: flex;
       gap: var(--space-2);
       margin-top: var(--space-3);
+    }
+
+    /* Copy notification */
+    .copy-notification {
+      position: fixed;
+      top: 80px;
+      right: 24px;
+      background: var(--color-success);
+      color: white;
+      padding: var(--space-3) var(--space-4);
+      border-radius: var(--radius-m);
+      font-size: 14px;
+      font-weight: 500;
+      box-shadow: var(--shadow-3);
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: all var(--transition-base);
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    .copy-notification.show {
+      opacity: 1;
+      transform: translateY(0);
     }
 
     /* Utilities */
@@ -607,6 +757,10 @@
 
       .output-header-right .btn {
         width: 100%;
+      }
+
+      .file-tab {
+        min-width: 100px;
       }
     }
   </style>
@@ -691,9 +845,6 @@
               清空所有
             </button>
           </div>
-          
-          <!-- Debug: File List -->
-          <div id="file-list" class="file-list" style="display: none;"></div>
         </div>
 
         <div class="section">
@@ -1073,6 +1224,13 @@
 
       <!-- Main Content -->
       <main class="content">
+        <!-- File Tabs (New) -->
+        <div class="file-tabs-container" id="file-tabs-container">
+          <div class="file-tabs-wrapper" id="file-tabs-wrapper">
+            <div class="file-tabs-empty">暂无文件，请上传文件以开始</div>
+          </div>
+        </div>
+
         <div class="output-header">
           <div class="output-header-left">
             <div class="output-title">
@@ -1118,6 +1276,11 @@
     </div>
   </div>
 
+  <!-- Copy notification -->
+  <div class="copy-notification" id="copy-notification">
+    ✓ 已复制到剪贴板
+  </div>
+
   <script>
     class FileFusion {
       constructor() {
@@ -1155,7 +1318,8 @@
         this.customExtInput = document.getElementById('custom-ext-input');
         this.addCustomBtn = document.getElementById('add-custom-btn');
         this.customExtContainer = document.getElementById('custom-extensions');
-        this.fileListEl = document.getElementById('file-list');
+        this.fileTabsWrapper = document.getElementById('file-tabs-wrapper');
+        this.copyNotification = document.getElementById('copy-notification');
       }
 
       bindEvents() {
@@ -1165,7 +1329,7 @@
         this.uploadZone.addEventListener('drop', this.handleDrop.bind(this));
         this.uploadZone.addEventListener('click', () => this.fileInput.click());
 
-        // File selection - 修复多文件上传
+        // File selection
         this.fileInput.addEventListener('change', (e) => {
           const files = Array.from(e.target.files);
           console.log('Selected files:', files.length);
@@ -1175,12 +1339,12 @@
         this.folderInput.addEventListener('change', (e) => {
           const files = Array.from(e.target.files);
           console.log('Selected folder files:', files.length);
-          this.handleFileSelect(files);
+          this。handleFileSelect(files);
         });
 
         // Filters
         this.filterCheckboxes.forEach(cb => {
-          cb.addEventListener('change', () => this.processFiles());
+          cb.addEventListener('change'， () => this.processFiles());
         });
 
         // Tabs
@@ -1189,20 +1353,102 @@
         });
 
         // Preset buttons
-        this.presetBtns.forEach(btn => {
-          btn.addEventListener('click', () => this.applyPreset(btn.dataset.preset));
+        this。presetBtns。forEach(btn => {
+          btn。addEventListener('click'， () => this.applyPreset(btn.dataset.preset));
         });
 
         // Custom extensions
         this.addCustomBtn.addEventListener('click', () => this.addCustomExtensions());
         this.customExtInput.addEventListener('keydown', e => {
-          if (e.key === 'Enter') this.addCustomExtensions();
+          if (e。key === 'Enter') this.addCustomExtensions();
         });
 
         // Actions
         this.copyBtn.addEventListener('click', this.copyToClipboard.bind(this));
         this.clearBtn.addEventListener('click', this.clearAll.bind(this));
         this.themeBtn.addEventListener('click', this.toggleTheme.bind(this));
+      }
+
+      // New method: Create file tab
+      createFileTab(file) {
+        const ext = this.getFileExtension(file。name);
+        const tab = document.createElement('div');
+        tab。className = 'file-tab';
+        tab.dataset.输入 = ext。replace('.', '');
+        tab.dataset.fileName = file。name;
+        
+        // File icon
+        const icon = document。createElement('div');
+        icon。className = 'file-tab-icon';
+        icon.innerHTML = this.getFileIcon(ext);
+        
+        // File name
+        const name = document.createElement('div');
+        name.className = 'file-tab-name';
+        name.textContent = file.name;
+        name.title = file.name;
+        
+        // Close button
+        const closeBtn = document.createElement('div');
+        closeBtn.className = 'file-tab-close';
+        closeBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
+        closeBtn.onclick = (e) => {
+          e.stopPropagation();
+          this.removeFile(file);
+        };
+        
+        tab.appendChild(icon);
+        tab.appendChild(name);
+        tab.appendChild(closeBtn);
+        
+        return tab;
+      }
+
+      // New method: Get file icon based on extension
+      getFileIcon(ext) {
+        const icons = {
+          '.js': '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>',
+          '.jsx': '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>',
+          '.ts': '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>',
+          '.tsx': '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>',
+          '.html': '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.56l4.07-1.13.55-6.1H7.38l-.18-2h9.6l.18-2H5l.56 6.13h6.89l-.23 2.58-2.22.6-2.22-.6-.14-1.66h-2l.29 3.19L12 17.56M4.07 3h15.86L18.5 19.2 12 21l-6.5-1.8L4.07 3z"/></svg>',
+          '.htm': '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.56l4.07-1.13.55-6.1H7.38l-.18-2h9.6l.18-2H5l.56 6.13h6.89l-.23 2.58-2.22.6-2.22-.6-.14-1.66h-2l.29 3.19L12 17.56M4.07 3h15.86L18.5 19.2 12 21l-6.5-1.8L4.07 3z"/></svg>',
+          '.css': '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.07 3h15.86L18.5 19.2 12 21l-6.5-1.8L4.07 3z"/></svg>',
+          '.scss': '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.07 3h15.86L18.5 19.2 12 21l-6.5-1.8L4.07 3z"/></svg>',
+          '.json': '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2m7 14a1 1 0 01-1-1 1 1 0 011-1 1 1 0 011 1 1 1 0 01-1 1m0-4a1 1 0 01-1-1 1 1 0 011-1 1 1 0 011 1 1 1 0 01-1 1m0-4a1 1 0 01-1-1 1 1 0 011-1 1 1 0 011 1 1 1 0 01-1 1z"/></svg>',
+          '.vue': '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 3h4.5L12 12 17.5 3H22l-10 17L2 3m4.5 0h3L12 7.58 14.5 3h3L12 12.07 6.5 3z"/></svg>',
+          '.md': '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.56 18H3.44C2.65 18 2 17.37 2 16.59V7.41C2 6.63 2.65 6 3.44 6h17.12c.79 0 1.44.63 1.44 1.41v9.18c0 .78-.65 1.41-1.44 1.41M6.81 15.19v-4.38l1.88 2.34 1.88-2.34v4.38h1.88V8.81h-1.88l-1.88 2.34-1.88-2.34H4.94v6.38h1.87M15.44 12h-1.88V8.81h1.88V12m2.07 3.19L19.38 12h-1.87v-1.19h1.87V8.81h1.88v6.38h-1.88l-1.87-3.19z"/></svg>'
+        };
+        
+        return icons[ext] || '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>';
+      }
+
+      // New method: Get file extension
+      getFileExtension(filename) {
+        const parts = filename.split('.');
+        return parts.length > 1 ? '.' + parts.pop().toLowerCase() : '';
+      }
+
+      // New method: Update file tabs
+      updateFileTabs() {
+        this.fileTabsWrapper.innerHTML = '';
+        
+        if (this.files.length === 0) {
+          this.fileTabsWrapper.innerHTML = '<div class="file-tabs-empty">暂无文件，请上传文件以开始</div>';
+          return;
+        }
+        
+        this.files.forEach(file => {
+          const tab = this.createFileTab(file);
+          this.fileTabsWrapper.appendChild(tab);
+        });
+      }
+
+      // New method: Remove single file
+      removeFile(fileToRemove) {
+        this.files = this.files.filter(f => f !== fileToRemove);
+        this.updateFileTabs();
+        this.processFiles();
       }
 
       switchTab(activeTab) {
@@ -1310,7 +1556,6 @@
           let entries = [];
           let batch;
           
-          // 读取所有条目（可能需要多次调用）
           do {
             batch = await new Promise(resolve => reader.readEntries(resolve));
             entries.push(...batch);
@@ -1326,16 +1571,15 @@
       }
 
       handleFileSelect(fileList) {
-        // 确保处理所有文件
         console.log('Processing files:', fileList.length);
         this.addFiles(fileList);
       }
 
       addFiles(newFiles) {
-        // 添加新文件到列表
+        // Add new files
         this.files = [...this.files, ...newFiles];
         
-        // 去重（基于文件名和大小）
+        // Remove duplicates
         const uniqueFiles = new Map();
         this.files.forEach(file => {
           const key = `${file.name}-${file.size}`;
@@ -1347,16 +1591,10 @@
         
         console.log('Total files after adding:', this.files.length);
         
-        // 显示文件列表（调试）
-        this.showFileList();
+        // Update file tabs
+        this.updateFileTabs();
         
         this.processFiles();
-      }
-
-      showFileList() {
-        // 可选：显示文件列表用于调试
-        const fileNames = this.files.map(f => f.name).join(', ');
-        console.log('Current files:', fileNames);
       }
 
       async processFiles() {
@@ -1379,7 +1617,6 @@
           const fileName = file.name.toLowerCase();
           return selectedExtensions.some(ext => {
             const extLower = ext.toLowerCase();
-            // Handle special cases like Makefile, Dockerfile
             if (!extLower.startsWith('.')) {
               return fileName === extLower;
             }
@@ -1430,35 +1667,80 @@
         this.charCount.textContent = charCount.toLocaleString();
       }
 
+      // Enhanced copy method with fallback
       async copyToClipboard() {
-        if (!this.output.value || this.output.value.includes('请选择或拖拽文件')) {
+        const text = this.output.value;
+        
+        if (!text || text.includes('请选择或拖拽文件')) {
           return;
         }
 
         try {
-          await navigator.clipboard.writeText(this.output.value);
-          const originalText = this.copyBtn.innerHTML;
-          this.copyBtn.innerHTML = `
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <polyline points="20 6 9 17 4 12"></polyline>
-            </svg>
-            已复制
-          `;
-          setTimeout(() => {
-            this.copyBtn.innerHTML = originalText;
-          }, 2000);
+          // Try modern clipboard API first
+          if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(text);
+            this.showCopyNotification();
+          } else {
+            // Fallback for older browsers or non-secure contexts
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            textArea.style.top = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+              const successful = document.execCommand('copy');
+              if (successful) {
+                this.showCopyNotification();
+              } else {
+                throw new Error('Copy command failed');
+              }
+            } catch (err) {
+              console.error('Fallback copy failed:', err);
+              // As last resort, select the output textarea for manual copy
+              this.output.select();
+              alert('自动复制失败，请手动按 Ctrl+C 或 Cmd+C 复制');
+            } finally {
+              document.body.removeChild(textArea);
+            }
+          }
         } catch (err) {
           console.error('Copy failed:', err);
-          alert('复制失败，请手动选择复制');
+          // Select text for manual copy
+          this.output.select();
+          alert('自动复制失败，请手动按 Ctrl+C 或 Cmd+C 复制');
         }
       }
 
+      showCopyNotification() {
+        // Update button temporarily
+        const originalHTML = this.copyBtn.innerHTML;
+        this.copyBtn.innerHTML = `
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          已复制
+        `;
+        
+        // Show notification
+        this。copyNotification。classList。add('show');
+        
+        setTimeout(() => {
+          this.copyBtn。innerHTML = originalHTML;
+          this。copyNotification。classList。remove('show');
+        }， 2000);
+      }
+
       clearAll() {
-        this.files = [];
-        this.fileInput.value = '';
-        this.folderInput.value = '';
-        this.output.value = '';
-        this.updateStats(0, 0);
+        this。文件 = [];
+        this。fileInput。value = '';
+        this。folderInput。value = '';
+        this。output。value = '';
+        this.updateStats(0， 0);
+        this.updateFileTabs();
         console.log('All files cleared');
       }
 
@@ -1474,13 +1756,13 @@
         const current = root.getAttribute('data-theme');
         
         if (!current) {
-          const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          const isDark = window。matchMedia('(prefers-color-scheme: dark)')。matches;
           const newTheme = isDark ? 'light' : 'dark';
-          root.setAttribute('data-theme', newTheme);
-          localStorage.setItem('theme', newTheme);
+          root。setAttribute('data-theme'， newTheme);
+          localStorage.setItem('theme'， newTheme);
         } else if (current === 'light') {
-          root.setAttribute('data-theme', 'dark');
-          localStorage.setItem('theme', 'dark');
+          root。setAttribute('data-theme'， 'dark');
+          localStorage。setItem('theme'， 'dark');
         } else {
           root.removeAttribute('data-theme');
           localStorage.removeItem('theme');
